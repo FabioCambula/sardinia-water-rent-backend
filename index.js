@@ -37,14 +37,12 @@ app.use(express.json());
 // ===== Import rotte =====
 const userRoutes = require("./src/routes/users");
 const productRoutes = require("./src/routes/products");
-const orderRoutes = require("./src/routes/orders");
 const cartRoutes = require("./src/routes/cart");
 const bookingRoutes = require("./src/routes/booking");
 
 // ===== Usa le rotte =====
 app.use("/api/users", userRoutes);
 app.use("/api/products", productRoutes);
-app.use("/api/orders", orderRoutes);
 app.use("/api/cart", cartRoutes);
 app.use("/api/bookings", bookingRoutes);
 
