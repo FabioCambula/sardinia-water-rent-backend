@@ -10,7 +10,10 @@ const auth = async (req, res, next) => {
     const user = await User.findById(decoded.id);
     if (!user) return res.status(401).json({ message: "Utente non trovato" });
 
-    req.user = user;
+    req.user = {
+      id: user._id.toString(),
+      role: user.role,
+    };
     next();
   } catch {
     res.status(401).json({ message: "Token non valido" });

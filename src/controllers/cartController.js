@@ -4,9 +4,9 @@ const Product = require("../models/Product");
 // 📌 LIST CART
 const listCart = async (req, res) => {
   try {
-    const cart = await Cart.findOne({ user: req.user.id })
-      .populate("products.product")
-      .populate("user", "-password");
+    const cart = await Cart.findOne({ user: req.user.id }).populate(
+      "products.product");
+    //.populate("user", "-password")
 
     if (!cart || cart.products.length === 0) {
       return res.status(200).json({ message: "Cart is empty", products: [] });

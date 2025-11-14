@@ -5,7 +5,7 @@ const isSelfOrAdmin = (req, res, next) => {
   }
 
   // Se l'utente normale sta provando ad accedere al proprio profilo → permesso
-  if (req.user._id.toString() === req.params.id) {
+  if (req.user.id.toString() === req.params.id) {
     return next();
   }
 

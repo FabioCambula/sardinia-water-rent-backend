@@ -39,6 +39,14 @@ const getBooking = async (req, res) => {
     if (!booking) {
       return res.status(404).json({ message: "Prenotazione non trovata" });
     }
+    // Controllo sicurezza: solo il proprietario o l'admin possono vedere
+    if (
+      booking.user._id.toString() !== req.user._id.toString() &&
+      req.user.role !== "admin"
+    ) {
+      return res.status(403).json({ message: "Accesso non autorizzato" });
+    }
+
     return res.status(200).json(booking);
   } catch (error) {
     return res.status(500).json({ message: error.message });
@@ -73,7 +81,7 @@ const createBookingFromCart = async (req, res) => {
 
     const savedBooking = await newBooking.save();
 
-    // 🔹 Scala stock prodotti
+    // Scala stock prodotti
     for (const item of cart.products) {
       await Product.findByIdAndUpdate(item.product._id, {
         $inc: { stock: -item.quantity },
@@ -100,39 +108,62 @@ const updateBookingItemStatus = async (req, res) => {
     const booking = await Booking.findById(bookingId).populate(
       "products.product"
     );
-    if (!booking)
+
+    if (!booking) {
       return res.status(404).json({ message: "Prenotazione non trovata" });
+    }
+
+    // Solo il proprietario o l'admin
+    if (
+      booking.user.toString() !== req.user._id.toString() &&
+      req.user.role !== "admin"
+    ) {
+      return res.status(403).json({ message: "Accesso non autorizzato" });
+    }
 
     const item = booking.products.id(itemId);
-    if (!item)
+    if (!item) {
       return res
         .status(404)
         .json({ message: "Prodotto non trovato nella prenotazione" });
+    }
 
     const prevStatus = item.status;
     item.status = status;
     await booking.save();
 
-    // 🔹 Se passa a "completed", restituiamo stock
+    // Ripristina stock se passa a completed
     if (status === "completed" && prevStatus !== "completed") {
       await Product.findByIdAndUpdate(item.product._id, {
         $inc: { stock: item.quantity },
       });
     }
 
-    res.status(200).json(booking);
+    return res.status(200).json(booking);
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    return res.status(500).json({ message: err.message });
   }
 };
 
 // 📌 Elimina prenotazione
 const deleteBooking = async (req, res) => {
   try {
-    const removed = await Booking.findByIdAndDelete(req.params.id);
-    if (!removed) {
+    const booking = await Booking.findById(req.params.id);
+
+    if (!booking) {
       return res.status(404).json({ message: "Prenotazione non trovata" });
     }
+
+    // Permesso solo al proprietario o all'admin
+    if (
+      booking.user.toString() !== req.user._id.toString() &&
+      req.user.role !== "admin"
+    ) {
+      return res.status(403).json({ message: "Accesso non autorizzato" });
+    }
+
+    await booking.deleteOne();
+
     return res
       .status(200)
       .json({ message: "Prenotazione eliminata con successo" });
