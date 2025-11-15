@@ -41,7 +41,8 @@ const getBooking = async (req, res) => {
     }
     // Controllo sicurezza: solo il proprietario o l'admin possono vedere
     if (
-      booking.user._id.toString() !== req.user._id.toString() &&
+      booking.user._id.toString() !== req.user.id
+       &&
       req.user.role !== "admin"
     ) {
       return res.status(403).json({ message: "Accesso non autorizzato" });
@@ -114,10 +115,7 @@ const updateBookingItemStatus = async (req, res) => {
     }
 
     // Solo il proprietario o l'admin
-    if (
-      booking.user.toString() !== req.user._id.toString() &&
-      req.user.role !== "admin"
-    ) {
+    if (booking.user.toString() !== req.user.id && req.user.role !== "admin") {
       return res.status(403).json({ message: "Accesso non autorizzato" });
     }
 
@@ -155,10 +153,7 @@ const deleteBooking = async (req, res) => {
     }
 
     // Permesso solo al proprietario o all'admin
-    if (
-      booking.user.toString() !== req.user._id.toString() &&
-      req.user.role !== "admin"
-    ) {
+    if (booking.user.toString() !== req.user.id && req.user.role !== "admin") {
       return res.status(403).json({ message: "Accesso non autorizzato" });
     }
 
