@@ -3,6 +3,15 @@
 Backend RESTful API del progetto **Noleggio Prodotti**, sviluppato in Node.js con Express e MongoDB (Atlas).  
 Gestisce autenticazione, prenotazioni, stock e ruoli utente.
 
+## ⚠️ Note sul Deployment
+
+### Primo caricamento lento
+Il backend è hostato su Render (piano gratuito), che mette il server in "sleep mode" dopo 15 minuti di inattività. 
+
+**Al primo accesso dopo un periodo di inattività, il caricamento può richiedere 30-60 secondi** mentre il server si risveglia. Le richieste successive saranno veloci e fluide.
+
+Questo è normale per i servizi gratuiti e non rappresenta un problema di performance dell'applicazione.
+
 ## 🚀 Funzionalità principali
 - Registrazione e login con hashing password (**bcrypt**).  
 - Gestione sessioni con cookie e `withCredentials`.  
